@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using PhoneBook.WebApi.Data;
 using Serilog;
 
 namespace PhoneBook.WebApi;
@@ -17,9 +19,14 @@ public static class AppConfigurator
 
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
-
+        
         builder.Host.UseSerilog((context, logConf) => logConf
             .ReadFrom.Configuration(builder.Configuration));
+
+        builder.Services.AddDbContext<PhonebookDbContext>(opts =>
+        {
+            opts.UseNpgsql(builder.Configuration.GetConnectionString("pgConnect"));
+        });
     }
 
     /// <summary>
