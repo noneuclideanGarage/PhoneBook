@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <Folder Include="DTOs\AppUser\" />
-    <Folder Include="Helpers\Mapping\" />
     <Folder Include="Helpers\Middleware\" />
   </ItemGroup>
 
