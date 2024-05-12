@@ -1,4 +1,5 @@
 import gasLogo from "/gas-logo.png"
+import "./Header.css"
 
 export default function Header() {
     return (
