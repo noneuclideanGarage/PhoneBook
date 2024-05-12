@@ -1,7 +1,11 @@
-
+import gasLogo from "/gas-logo.png"
 
 export default function Header() {
     return (
-        <header>Holla</header>
+        <>
+            <nav>
+            <img className="app-logo" src={gasLogo} alt="app-logo"/>
+            </nav>
+        </>
     )
 }
