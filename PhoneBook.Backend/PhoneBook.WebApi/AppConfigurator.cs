@@ -132,7 +132,7 @@ public static class AppConfigurator
         app.UseHttpsRedirection();
 
         app.UseSerilogRequestLogging();
-
+        
         app.UseCors(policyBuilder => policyBuilder
             .AllowAnyHeader()
             .AllowAnyMethod()
