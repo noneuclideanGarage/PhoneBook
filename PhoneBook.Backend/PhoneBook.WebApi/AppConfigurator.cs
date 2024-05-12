@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PhoneBook.WebApi.Data;
+using PhoneBook.WebApi.Helpers.Middleware;
 using Serilog;
 
 namespace PhoneBook.WebApi;
@@ -41,9 +42,10 @@ public static class AppConfigurator
             app.UseSwaggerUI();
         }
 
-        app.UseSerilogRequestLogging();
-
+        app.UseMiddleware<TaskCancelledExceptionCatchMiddleware>();
         app.UseHttpsRedirection();
+        
+        app.UseSerilogRequestLogging();
 
         app.UseAuthorization();
 
