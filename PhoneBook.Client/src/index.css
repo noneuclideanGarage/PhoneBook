@@ -14,5 +14,10 @@
 body {
   box-sizing: border-box;
   background-color: #edeeee;
+  /*for sidebar*/
+  overflow: hidden;
 }
 
+main {
+  padding: 5px 3px;
+}

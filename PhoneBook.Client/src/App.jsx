@@ -1,14 +1,14 @@
 import Header from './components/Header/Header'
 import { useEffect, useState } from 'react'
+import SideBar from './components/SideBar/SideBar'
 
 function App() {
 
   const [rawData, setRawData] = useState([])
+  const [location, setLocation] = useState("table")
 
 
   useEffect(() => {
-    console.log("Effect!!!")
-
     async function sendReq() {
       const res = await fetch("http://localhost:5888/api/phonebook")
       if (res.status !== 200) {
@@ -27,8 +27,9 @@ function App() {
   return (
     <>
       <Header />
+      <SideBar changeLocation={setLocation} currentLocation={location}/>
       <main>
-        
+
       </main>
     </>
   )
