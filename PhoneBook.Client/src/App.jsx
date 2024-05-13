@@ -1,6 +1,7 @@
 import Header from './components/Header/Header'
 import { useEffect, useState } from 'react'
 import SideBar from './components/SideBar/SideBar'
+import Table from './components/Table/Table'
 
 function App() {
 
@@ -27,9 +28,9 @@ function App() {
   return (
     <>
       <Header />
-      <SideBar changeLocation={setLocation} currentLocation={location}/>
       <main>
-
+        <SideBar changeLocation={setLocation} currentLocation={location} />
+        <Table data={rawData} />
       </main>
     </>
   )

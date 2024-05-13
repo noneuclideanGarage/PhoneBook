@@ -19,5 +19,7 @@ body {
 }
 
 main {
-  padding: 5px 3px;
+  background: transparent;
+  display: flex;
+  flex-direction: row;
 }
