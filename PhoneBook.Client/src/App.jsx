@@ -11,9 +11,13 @@ function App() {
 
     async function sendReq() {
       const res = await fetch("http://localhost:5888/api/phonebook")
-      const data = await res.json()
-      console.log("Data:")
-      setRawData(data)
+      if (res.status !== 200) {
+        // console.log("Status code: ",res.status)
+        console.log("Server doesn't respond")
+      } else {
+        const data = await res.json()
+        setRawData(data)
+      }
     }
     sendReq()
   }, [])
@@ -22,11 +26,9 @@ function App() {
 
   return (
     <>
-      <header>
-        <Header />
-      </header>
+      <Header />
       <main>
-
+        
       </main>
     </>
   )

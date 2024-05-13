@@ -4,9 +4,9 @@ import "./Header.css"
 export default function Header() {
     return (
         <>
-            <nav>
+            <header>
             <img className="app-logo" src={gasLogo} alt="app-logo"/>
-            </nav>
+            </header>
         </>
     )
 }
