@@ -63,7 +63,7 @@ public class PhonebookRepository : IPhonebookRepository
         model.Email = updateDto.Email;
         model.Post = updateDto.Post;
         model.Organization = updateDto.Organization;
-        model.Subdivision = model.Subdivision;
+        model.Subdivision = updateDto.Subdivision;
 
         await _context.SaveChangesAsync(cancellationToken);
         return model.ToPhonebookDto();
