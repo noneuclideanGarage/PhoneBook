@@ -1,8 +1,5 @@
-.table-container {
-    border-radius: 7px;
-    width: 100%;
-    height: 100%; 
-    background-color: black;
-    overflow: hidden;
-    margin: 8px 8px;
+.table-component {
+    
+    grid-row-start: 1;
+    grid-row-end: 3;
 }

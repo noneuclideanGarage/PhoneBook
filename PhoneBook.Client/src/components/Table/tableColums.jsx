@@ -36,6 +36,16 @@ const colums = [
     }
 ]
 
+const tableStyles = {
+    row: {
+        style: {
+            minHeight: "48px",
+            minWidth: "140px"
+        }
+    }
+}
+
 export {
-    colums
+    colums,
+    tableStyles
 }

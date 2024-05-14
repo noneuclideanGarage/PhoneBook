@@ -1,21 +1,44 @@
 import DataTable from "react-data-table-component"
 import "./Table.css"
-import { colums } from "./tableData"
+import { colums, tableStyles } from "./tableColums"
+import NoContent from "./NoContent"
 
-export default function Table({data}) {
 
-    console.log(data)
-    // const tableData = data.map(record => {
-    //     return {
-    //         ...record,
-    //         fullname: `${record.lastname} ${record.firstname} ${record.middlename}`,
-    //     }
-    // })
+export default function Table({ data, isPending, changePendingStatus }) {
+
+
+    function phonenumbersToString(phonenumbers) {
+        let result = ""
+        phonenumbers.map(pn => {
+            result = result + `${pn.type.toLowerCase()}: ${pn.number}\n`
+        })
+
+        console.log(result)
+        return result
+    }
+
+    const tableRecords = data.map(record => {
+        return {
+            ...record,
+            fullname: `${record.lastname} ${record.firstname} ${record.middlename}`,
+            phonenumbers: phonenumbersToString(record.phonenumbers),
+            organization: record.organization
+        }
+    })
+
+    console.log(changePendingStatus, isPending)
+    console.log(tableRecords)
 
     return (
-            <div className="table-container">
-
-                <DataTable columns={colums} fixedHeader/>
-            </div>
+        <div className="main-container shadow">
+            <div className="table-component"></div>
+            <DataTable
+                style={tableStyles}
+                columns={colums}
+                fixedHeader
+                pagination
+                data={tableRecords}
+            />
+        </div>
     )
 }

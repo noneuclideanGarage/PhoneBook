@@ -7,7 +7,7 @@ function App() {
 
   const [rawData, setRawData] = useState([])
   const [location, setLocation] = useState("table")
-
+  const [pending, SetPending] = useState(true)
 
   useEffect(() => {
     async function sendReq() {
@@ -30,7 +30,7 @@ function App() {
       <Header />
       <main>
         <SideBar changeLocation={setLocation} currentLocation={location} />
-        <Table data={rawData} />
+        <Table data={rawData} isPending={pending} changePendingStatus={SetPending}/>
       </main>
     </>
   )
