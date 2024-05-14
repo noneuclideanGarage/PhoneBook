@@ -1,13 +1,14 @@
 import Header from './components/Header/Header'
 import { useEffect, useState } from 'react'
 import SideBar from './components/SideBar/SideBar'
-import Table from './components/Table/Table'
+// import Table from './components/Table/Table'
+import AntTable from './components/AntTable/AntTable'
 
 function App() {
 
   const [rawData, setRawData] = useState([])
   const [location, setLocation] = useState("table")
-  const [pending, SetPending] = useState(true)
+  // const [pending, SetPending] = useState(true)
 
   useEffect(() => {
     async function sendReq() {
@@ -30,7 +31,8 @@ function App() {
       <Header />
       <main>
         <SideBar changeLocation={setLocation} currentLocation={location} />
-        <Table data={rawData} isPending={pending} changePendingStatus={SetPending}/>
+        <AntTable data={rawData}/>
+        {/* <Table data={rawData} isPending={pending} changePendingStatus={SetPending}/> */}
       </main>
     </>
   )
