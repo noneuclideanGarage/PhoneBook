@@ -4,7 +4,7 @@ import "./Header.css"
 export default function Header() {
     return (
         <>
-            <header>
+            <header id="header">
             <img className="app-logo" src={gasLogo} alt="app-logo"/>
             </header>
         </>

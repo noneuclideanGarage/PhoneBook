@@ -34,10 +34,10 @@ function App() {
       </Row>
       <main>
         <Row >
-          <Col xs={3} sm={3} md={2} lg={2}>
+          <Col xs={3} sm={2} md={2} lg={2}>
             <SideBar changeLocation={setLocation} currentLocation={location} />
           </Col>
-          <Col xs={21} sm={21} md={22} lg={22}>
+          <Col xs={21} sm={/*21*/"auto"} md={/*22*/ "auto"} lg={/*22*/"auto"}>
             <AntTable data={rawData} />
           </Col>
         </Row>
