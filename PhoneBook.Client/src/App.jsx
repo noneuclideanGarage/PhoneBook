@@ -8,9 +8,8 @@ const { Sider, Content } = Layout;
 
 function App() {
 
-  const [rawData, setRawData] = useState([])
+  const [rawData, setRawData] = useState(() => [])
   const [location, setLocation] = useState("table")
-  // const [pending, SetPending] = useState(true)
 
   useEffect(() => {
     async function sendReq() {
@@ -52,7 +51,7 @@ function App() {
               borderRadius: '8px',
               boxShadow: '0px 0px 2px 0px #00000049'
             }}>
-              <AntTable data={rawData} />
+              <AntTable data={rawData}/>
             </Content>
           </Layout>
         </Row>
