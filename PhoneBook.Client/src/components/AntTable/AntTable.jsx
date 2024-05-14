@@ -16,9 +16,10 @@ export default function AntTable({ data }) {
         },
         {
             title: "Телефон",
-            width: 250,
+            width: 300,
             dataIndex: "phonenumbers",
             key: "phonenumbers",
+
 
         },
         {
@@ -74,11 +75,9 @@ export default function AntTable({ data }) {
             </label> */}
             <Table
                 columns={colums}
-                pagination={{ position: top }}
-                sticky={{ offsetHeader: 64 }}
+                pagination={{ position: "top" }}
                 dataSource={tableRecords}
-                scroll={{ x: true, y: true }}
-                size="small"
+                scroll={{ x: 100, y: 650 }}
             />
         </div>
     )

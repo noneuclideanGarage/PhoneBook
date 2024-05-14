@@ -1,7 +1,6 @@
 import DataTable from "react-data-table-component"
 import "./Table.css"
 import { colums, tableStyles } from "./tableColums"
-import NoContent from "./NoContent"
 
 
 export default function Table({ data, isPending, changePendingStatus }) {

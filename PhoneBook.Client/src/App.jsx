@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import SideBar from './components/SideBar/SideBar'
 // import Table from './components/Table/Table'
 import AntTable from './components/AntTable/AntTable'
+import { Col, Row } from 'antd';
 
 function App() {
 
@@ -28,10 +29,18 @@ function App() {
 
   return (
     <>
-      <Header />
+      <Row>
+        <Header />
+      </Row>
       <main>
-        <SideBar changeLocation={setLocation} currentLocation={location} />
-        <AntTable data={rawData}/>
+        <Row >
+          <Col xs={3} sm={3} md={2} lg={2}>
+            <SideBar changeLocation={setLocation} currentLocation={location} />
+          </Col>
+          <Col xs={21} sm={21} md={22} lg={22}>
+            <AntTable data={rawData} />
+          </Col>
+        </Row>
         {/* <Table data={rawData} isPending={pending} changePendingStatus={SetPending}/> */}
       </main>
     </>
