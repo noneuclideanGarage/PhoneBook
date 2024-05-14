@@ -1,9 +1,10 @@
 import Header from './components/Header/Header'
 import { useEffect, useState } from 'react'
 import SideBar from './components/SideBar/SideBar'
-// import Table from './components/Table/Table'
 import AntTable from './components/AntTable/AntTable'
-import { Col, Row } from 'antd';
+import { Col, Row, Layout } from 'antd';
+
+const { Sider, Content } = Layout;
 
 function App() {
 
@@ -30,16 +31,30 @@ function App() {
   return (
     <>
       <Row>
-        <Header />
+        <Col span={24}>
+          <Header />
+        </Col>
       </Row>
       <main>
         <Row >
-          <Col xs={3} sm={2} md={2} lg={2}>
-            <SideBar changeLocation={setLocation} currentLocation={location} />
-          </Col>
-          <Col xs={21} sm={/*21*/"auto"} md={/*22*/ "auto"} lg={/*22*/"auto"}>
-            <AntTable data={rawData} />
-          </Col>
+          <Layout>
+            <Sider
+              width={150}
+              style={{
+                backgroundColor: 'transparent'
+              }}>
+              <SideBar changeLocation={setLocation} currentLocation={location} />
+            </Sider>
+            <Content style={{
+              backgroundColor: 'white',
+              padding: '10px',
+              margin: '10px 10px',
+              borderRadius: '8px',
+              boxShadow: '0px 0px 2px 0px #00000049'
+            }}>
+              <AntTable data={rawData} />
+            </Content>
+          </Layout>
         </Row>
         {/* <Table data={rawData} isPending={pending} changePendingStatus={SetPending}/> */}
       </main>
