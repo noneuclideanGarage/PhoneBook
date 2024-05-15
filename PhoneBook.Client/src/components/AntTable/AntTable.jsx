@@ -1,25 +1,59 @@
+import { useEffect, useState } from "react";
 import { Table, Input } from "antd";
 import searchIcon from "/IconSearch.png"
 import "./AntTable.css"
 
 export default function AntTable({ data }) {
 
-    const filters = data.map(record => {
-        return {
-            text: record.subdivision,
-            value: record.subdivision
-        }
-    })
-    const tableRecords = data.map(record => {
-        return {
-            ...record,
-            key: record.id,
-            fullname: `${record.lastname} ${record.firstname} ${record.middlename}`,
-            // phonenumbers: phonenumbersToString(record.phonenumbers),
-            organization: record.organization
-        }
-    })
+    const [searchValue, setSearchValue] = useState('')
+    const [searchResult, setSearchResult] = useState(() => data)
+    const [filters, setFilters] = useState([])
 
+    useEffect(() => {
+        setFilters(data.map(record => {
+            return {
+                text: record.subdivision,
+                value: record.subdivision
+            }
+        }))
+
+        setSearchResult(mappingRecords(data))
+    }, [data])
+
+
+    useEffect(() => {
+
+        if (searchValue.length === 0) {
+            setSearchResult(mappingRecords(data))
+        } else {
+            setSearchResult(prev => {
+                const filteredData = prev.filter(row => {
+                    const searchTerms = searchValue.toLowerCase().split(' ');
+                    return searchTerms.some(term => {
+                        return (
+                            row.fullname.toLowerCase().includes(term) ||
+                            row.post.toLowerCase().includes(term) ||
+                            row.address.toLowerCase().includes(term) ||
+                            row.organization.toLowerCase().includes(term) ||
+                            row.subdivision.toLowerCase().includes(term)
+                        );
+                    });
+                })
+
+                return filteredData
+            })
+        }
+    }, [searchValue])
+
+    function mappingRecords(raw) {
+        return raw.map(record => {
+            return {
+                ...record,
+                key: record.id,
+                fullname: `${record.lastname} ${record.firstname} ${record.middlename}`,
+            }
+        })
+    }
 
     const colums = [
         {
@@ -75,9 +109,9 @@ export default function AntTable({ data }) {
             width: 250,
             dataIndex: "subdivision",
             key: "subdivision",
-            filters:  filters,
-            onFilter: (value, item) => item.subdivision.includes(value) 
-            
+            filters: filters,
+            onFilter: (value, item) => item.subdivision.includes(value)
+
         }
     ]
     console.log(filters)
@@ -90,6 +124,8 @@ export default function AntTable({ data }) {
                 inputMode="text"
                 placeholder="Введите текс"
                 size="large"
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
             />
             <Table
                 className="atable"
@@ -102,7 +138,7 @@ export default function AntTable({ data }) {
                         10, 25, 50, 100
                     ],
                 }}
-                dataSource={tableRecords}
+                dataSource={searchResult}
                 scroll={{ x: 800, y: 500 }}
                 tableLayout="auto"
                 ellipsis={false}
