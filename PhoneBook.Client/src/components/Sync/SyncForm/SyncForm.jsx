@@ -3,7 +3,7 @@ import { InboxOutlined } from '@ant-design/icons';
 const { Dragger } = Upload;
 
 const props = {
-    name: 'files' , //it should be `files`
+    name: 'files' , //it should be `files` for post request
     multiple: true,
     action: 'http://localhost:5888/api/sync-json',
     onChange(info) {
