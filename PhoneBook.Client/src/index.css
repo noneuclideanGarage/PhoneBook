@@ -40,4 +40,6 @@ body {
 
 .main-container {
   padding: 10px 15px;
+  height: 100%;
+  width: 100%;
 }

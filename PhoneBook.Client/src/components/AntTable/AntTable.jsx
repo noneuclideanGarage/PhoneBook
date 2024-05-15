@@ -6,7 +6,7 @@ import "./AntTable.css"
 export default function AntTable({ data }) {
 
     const [searchValue, setSearchValue] = useState('')
-    const [searchResult, setSearchResult] = useState(() => data)
+    const [searchResult, setSearchResult] = useState()
     const [filters, setFilters] = useState([])
 
     useEffect(() => {
@@ -43,7 +43,7 @@ export default function AntTable({ data }) {
                 return filteredData
             })
         }
-    }, [searchValue])
+    }, [data, searchValue])
 
     function mappingRecords(raw) {
         return raw.map(record => {
@@ -114,7 +114,6 @@ export default function AntTable({ data }) {
 
         }
     ]
-    console.log(filters)
 
     return (
         <div className="main-container shadow">

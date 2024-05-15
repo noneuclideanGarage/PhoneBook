@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import SideBar from './components/SideBar/SideBar'
 import AntTable from './components/AntTable/AntTable'
 import { Col, Row, Layout } from 'antd';
+import SyncJson from './components/Sync/SyncJson/SyncJson';
 
 const { Sider, Content } = Layout;
 
@@ -10,6 +11,7 @@ function App() {
 
   const [rawData, setRawData] = useState(() => [])
   const [location, setLocation] = useState("table")
+  const [isAuth, setIsAuth] = useState(false)
 
   useEffect(() => {
     async function sendReq() {
@@ -24,8 +26,6 @@ function App() {
     }
     sendReq()
   }, [])
-
-  console.log(rawData)
 
   return (
     <>
@@ -51,11 +51,12 @@ function App() {
               borderRadius: '8px',
               boxShadow: '0px 0px 2px 0px #00000049'
             }}>
-              <AntTable data={rawData}/>
+              {location === "table"
+                ? <AntTable data={rawData} />
+                : <SyncJson isAuth={isAuth} authorize={setIsAuth}/>}
             </Content>
           </Layout>
         </Row>
-        {/* <Table data={rawData} isPending={pending} changePendingStatus={SetPending}/> */}
       </main>
     </>
   )
