@@ -1,14 +1,36 @@
+import { loginApi } from "../../../Services/ApiService";
 import "./SyncLogin.css"
-import { Button, Form, Input, Flex } from 'antd';
+import { Button, Form, Input, Flex, message } from 'antd';
 
 export default function SyncLogin({ changeAuth }) {
 
-    const onFinish = (values) => {
-        console.log('Success:', values);
-        changeAuth(prev => !prev)
+    const onFinish = async (values) => {
+
+        const data = await loginApi(values.username, values.password)
+
+        if (data.status === 200) {
+            const json = await data.json()
+
+
+            localStorage.setItem("username", json.username)
+            localStorage.setItem("token", json.token)
+
+            changeAuth(prev => {
+                return {
+                    username: json.username,
+                    token: json.token,
+                    isAuth: !prev.isAuth
+                }
+            })
+            console.log('Success:', values.username);
+        } else {
+            console.log("Неверное имя пользователя или пароль")
+        }
+
+
     };
     const onFinishFailed = (errorInfo) => {
-        console.log('Failed:', errorInfo);
+        message.error('Failed:', errorInfo);
     };
 
     return (
@@ -71,10 +93,9 @@ export default function SyncLogin({ changeAuth }) {
                         }}
                     >
                         <Button
-                            style={{height: 40}}
                             type="primary"
                             htmlType="submit">
-                            Submit
+                            Войти
                         </Button>
                     </Form.Item>
                 </Form>

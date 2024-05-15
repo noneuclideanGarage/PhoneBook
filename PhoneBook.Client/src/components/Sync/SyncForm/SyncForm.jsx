@@ -3,7 +3,7 @@ import { InboxOutlined } from '@ant-design/icons';
 const { Dragger } = Upload;
 
 const props = {
-    name: 'file',
+    name: 'files' , //it should be `files`
     multiple: true,
     action: 'http://localhost:5888/api/sync-json',
     onChange(info) {
@@ -23,10 +23,13 @@ const props = {
 };
 
 
-export default function SyncForm() {
+export default function SyncForm({ token }) {
+    console.log(token)
     return (
         <div className="sync-form" style={{ marginTop: 200 }}>
-            <Dragger {...props}>
+            <Dragger {...props} headers={{
+                "Authorization": 'Bearer ' + token
+            }} accept='.json'>
                 <p className="ant-upload-drag-icon">
                     <InboxOutlined />
                 </p>

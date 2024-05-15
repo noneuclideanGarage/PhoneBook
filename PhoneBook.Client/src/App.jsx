@@ -11,7 +11,13 @@ function App() {
 
   const [rawData, setRawData] = useState(() => [])
   const [location, setLocation] = useState("table")
-  const [isAuth, setIsAuth] = useState(true)
+  const [user, setUser] = useState({
+    username: "",
+    token: "",
+    isAuth: false
+  })
+
+  console.log(user)
 
   useEffect(() => {
     async function sendReq() {
@@ -25,6 +31,18 @@ function App() {
       }
     }
     sendReq()
+
+    const username = localStorage.getItem("user")
+    const token = localStorage.getItem("token")
+
+    if (username && token) {
+      setUser({
+        [username]: username,
+        [token]: token,
+        isAuth: true
+      }
+      )
+    }
   }, [])
 
   return (
@@ -53,7 +71,10 @@ function App() {
             }}>
               {location === "table"
                 ? <AntTable data={rawData} />
-                : <SyncJson isAuth={isAuth} authorize={setIsAuth}/>}
+                : <SyncJson
+                  isAuth={user.isAuth}
+                  authorize={setUser}
+                  token={user.token} />}
             </Content>
           </Layout>
         </Row>
