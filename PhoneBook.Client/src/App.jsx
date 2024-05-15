@@ -11,7 +11,7 @@ function App() {
 
   const [rawData, setRawData] = useState(() => [])
   const [location, setLocation] = useState("table")
-  const [isAuth, setIsAuth] = useState(false)
+  const [isAuth, setIsAuth] = useState(true)
 
   useEffect(() => {
     async function sendReq() {
