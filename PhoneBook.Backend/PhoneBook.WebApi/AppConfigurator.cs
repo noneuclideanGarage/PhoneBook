@@ -137,8 +137,8 @@ public static class AppConfigurator
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials()
-            //.WithOrigins(https ip-address)
-            .SetIsOriginAllowed(origin => true)
+            .WithOrigins("http://localhost:5123")
+            // .SetIsOriginAllowed(origin => true)
         );
         
         app.UseAuthentication();

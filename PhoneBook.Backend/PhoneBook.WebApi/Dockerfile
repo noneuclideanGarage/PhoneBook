@@ -1,8 +1,8 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER $APP_UID
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
+EXPOSE 5757
+EXPOSE 5858
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
@@ -10,6 +10,9 @@ WORKDIR /src
 COPY ["PhoneBook.WebApi/PhoneBook.WebApi.csproj", "PhoneBook.WebApi/"]
 RUN dotnet restore "PhoneBook.WebApi/PhoneBook.WebApi.csproj"
 COPY . .
+RUN dotnet tool install --global dotnet-ef
+RUN /root/.dotnet/tools/dotnet-ef database update
+
 WORKDIR "/src/PhoneBook.WebApi"
 RUN dotnet build "PhoneBook.WebApi.csproj" -c $BUILD_CONFIGURATION -o /app/build
 

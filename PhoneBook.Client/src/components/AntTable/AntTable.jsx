@@ -66,7 +66,9 @@ export default function AntTable({ data }) {
             title: "ФИО",
             dataIndex: "fullname",
             key: "fullname",
-            width: 270
+            width: 270,
+            sorter: (a,b) => a.fullname - b.fullname,
+            sortDirections: ['descend']
         },
         {
             title: "Телефон",
