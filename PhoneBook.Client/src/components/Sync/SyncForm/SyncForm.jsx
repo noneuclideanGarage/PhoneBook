@@ -8,17 +8,14 @@ const props = {
     action: 'http://localhost:5888/api/sync-json',
     onChange(info) {
         const { status } = info.file;
-        if (status !== 'uploading') {
-            console.log(info.file, info.fileList);
-        }
         if (status === 'done') {
-            message.success(`${info.file.name} file uploaded successfully.`);
+            message.success(`${info.file.name} успешно загружен.`);
         } else if (status === 'error') {
-            message.error(`${info.file.name} file upload failed.`);
+            message.error(`${info.file.name} загрузка не удалась.`);
         }
     },
     onDrop(e) {
-        console.log('Dropped files', e.dataTransfer.files);
+        console('Dropped files', e.dataTransfer.files);
     },
 };
 
