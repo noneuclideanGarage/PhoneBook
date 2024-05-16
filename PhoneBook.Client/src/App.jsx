@@ -17,8 +17,6 @@ function App() {
     isAuth: false
   })
 
-  console.log(user)
-
   useEffect(() => {
     async function sendReq() {
       const res = await fetch("http://localhost:5888/api/phonebook")

@@ -119,28 +119,28 @@ public static class AppConfigurator
     /// <param name="app"></param>
     public static void ConfigureMiddleware(this WebApplication app)
     {
+        using var scope = app.Services.CreateScope();
+        var db = scope.ServiceProvider.GetService<PhonebookDbContext>();
+        db.Database.EnsureCreated();
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
             app.UseSwaggerUI();
-            using var scope = app.Services.CreateScope();
-            var db = scope.ServiceProvider.GetService<PhonebookDbContext>();
-            db?.Database.EnsureCreated();
         }
 
         app.UseMiddleware<TaskCancelledExceptionCatchMiddleware>();
         app.UseHttpsRedirection();
 
         app.UseSerilogRequestLogging();
-        
+
         app.UseCors(policyBuilder => policyBuilder
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials()
-            .WithOrigins("http://localhost:5123")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials()
+                .WithOrigins("http://localhost:5123")
             // .SetIsOriginAllowed(origin => true)
         );
-        
+
         app.UseAuthentication();
         app.UseAuthorization();
 

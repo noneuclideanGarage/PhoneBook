@@ -10,12 +10,14 @@ export default function AntTable({ data }) {
     const [filters, setFilters] = useState([])
 
     useEffect(() => {
-        setFilters(data.map(record => {
+        const rawFilters = data.map(record => {
             return {
                 text: record.subdivision,
                 value: record.subdivision
             }
-        }))
+        })
+
+        setFilters(rawFilters.filter(filter => filter.value))
 
         setSearchResult(mappingRecords(data))
     }, [data])
@@ -67,7 +69,7 @@ export default function AntTable({ data }) {
             dataIndex: "fullname",
             key: "fullname",
             width: 270,
-            sorter: (a,b) => a.fullname - b.fullname,
+            sorter: (a, b) => b.fullname - a.fullname,
             sortDirections: ['descend']
         },
         {
