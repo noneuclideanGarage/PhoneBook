@@ -1,6 +1,6 @@
 import { message } from "antd"
 
-const apiUrl = 'http://localhost:5888/api/'
+const apiUrl = 'backend/' //http://localhost:5888/api/
 
 export async function loginApi(username, password) {
     try {

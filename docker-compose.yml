@@ -1,0 +1,42 @@
+services:
+  database:
+    image: postgres
+    container_name: database
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: phonebookdb
+      POSTGRES_PASSWORD: 123
+      POSTGRES_USER: postgres
+  
+  backend:
+    container_name: backend
+    build:
+      context: ./PhoneBook.Backend/
+      dockerfile: ./PhoneBook.WebApi/Dockerfile
+    environment:
+      - ASPNETCORE_HTTP_PORTS=5888
+    ports:
+      - "5888:5888"
+    depends_on:
+      - database
+  
+  client:
+    container_name: client
+    build:
+      context: ./PhoneBook.Client/
+      dockerfile: ./Dockerfile
+    ports:
+      - "5123:5123"
+    depends_on:
+      - backend
+  
+  proxy:
+    image: nginx:mainline
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "80:80"
+    links:
+      - backend
+      - client

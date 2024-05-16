@@ -19,7 +19,7 @@ function App() {
 
   useEffect(() => {
     async function sendReq() {
-      const res = await fetch("http://localhost:5888/api/phonebook")
+      const res = await fetch("backend/phonebook") //http://localhost:5888/api/phonebook
       if (res.status !== 200) {
         // console.log("Status code: ",res.status)
         console.log("Server doesn't respond")

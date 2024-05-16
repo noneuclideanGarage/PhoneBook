@@ -25,6 +25,14 @@ public static class AppConfigurator
     /// <param name="builder"></param>
     public static void ConfigureServices(this WebApplicationBuilder builder)
     {
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy(name: "CorsPolicy", policy =>
+            {
+                policy.WithOrigins("http://locahost:5123", "http://database:5432");
+            });
+        });
+        
         builder.Services.AddControllers();
 
         builder.Services.AddEndpointsApiExplorer();
@@ -119,27 +127,22 @@ public static class AppConfigurator
     /// <param name="app"></param>
     public static void ConfigureMiddleware(this WebApplication app)
     {
+        app.UseCors("CorsPolicy");
+
         using var scope = app.Services.CreateScope();
         var db = scope.ServiceProvider.GetService<PhonebookDbContext>();
         db.Database.EnsureCreated();
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI();
-        }
-
+        
+        //if (app.Environment.IsDevelopment())
+        //{
+        app.UseSwagger();
+        app.UseSwaggerUI();
+        //}
+        
         app.UseMiddleware<TaskCancelledExceptionCatchMiddleware>();
-        app.UseHttpsRedirection();
+        // app.UseHttpsRedirection();
 
         app.UseSerilogRequestLogging();
-
-        app.UseCors(policyBuilder => policyBuilder
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials()
-                .WithOrigins("http://localhost:5123")
-            // .SetIsOriginAllowed(origin => true)
-        );
 
         app.UseAuthentication();
         app.UseAuthorization();

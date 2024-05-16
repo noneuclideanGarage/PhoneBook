@@ -5,7 +5,7 @@ const { Dragger } = Upload;
 const props = {
     name: 'files' , //it should be `files` for post request
     multiple: true,
-    action: 'http://localhost:5888/api/sync-json',
+    action: 'backend/sync-json', //http://localhost:5888/api/sync-json
     onChange(info) {
         const { status } = info.file;
         if (status === 'done') {
