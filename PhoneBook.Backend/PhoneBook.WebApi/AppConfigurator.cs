@@ -131,8 +131,11 @@ public static class AppConfigurator
 
         using var scope = app.Services.CreateScope();
         var db = scope.ServiceProvider.GetService<PhonebookDbContext>();
+        var userManager = scope.ServiceProvider.GetService<UserManager<AppUser>>();
         db.Database.EnsureCreated();
-        
+        if (userManager != null) _ = DataSeeder.SeedAsync(userManager);
+        else Log.Information("Cannot get UserManager from scope");
+
         //if (app.Environment.IsDevelopment())
         //{
         app.UseSwagger();
