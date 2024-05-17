@@ -169,10 +169,10 @@ DELETE-запрос единичной записи из базы данных
 Аутентификация в API. Пример JSON для отправки по эдпоинту:
 ```json
 {
-  "username": "test",
-  "role": "Admin",
-  "password": "Test@1234567",
-  "confirmPassword": "Test@1234567"
+  "username": "string",
+  "role": "string",
+  "password": "string",
+  "confirmPassword": "string"
 }
 ```
 Свойство `role` принимает значения `"Admin"` или `"User"`.
