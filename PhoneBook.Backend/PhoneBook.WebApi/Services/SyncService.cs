@@ -47,6 +47,7 @@ public class SyncService
             {
                 if (file.Length != 0)
                 {
+                    //replace start
                     var newPhonebookDto =
                         await JsonSerializer.DeserializeAsync<PhonebookDto>(
                             file.OpenReadStream(),
