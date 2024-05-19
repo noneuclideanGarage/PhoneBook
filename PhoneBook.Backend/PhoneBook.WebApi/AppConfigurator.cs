@@ -50,12 +50,7 @@ public static class AppConfigurator
         builder.Services.AddScoped<ITokenService, TokenService>();
         builder.Services.AddScoped<IAccountRepository, AccountRepository>();
         builder.Services.AddScoped<SyncService>();
-
-        builder.Services.AddDbContext<PhonebookDbContext>(opt =>
-        {
-            opt.UseNpgsql(builder.Configuration.GetConnectionString("db_conn"));
-        });
-
+        
         builder.Services.AddIdentity<AppUser, IdentityRole>(opt =>
             {
                 opt.Password.RequireDigit = true;
