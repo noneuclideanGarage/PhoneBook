@@ -54,7 +54,7 @@ public static class AppConfigurator
 
         builder.Services.AddDbContext<PhonebookDbContext>(opt =>
         {
-            opt.UseNpgsql(builder.Configuration.GetConnectionString("db_conn"));
+            opt.UseNpgsql(builder.Configuration.GetConnectionString("pgConnect"));
         });
 
 
