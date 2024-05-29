@@ -37,7 +37,8 @@ export default function AntTable({ data }) {
                             row.post.toLowerCase().includes(term) ||
                             row.address.toLowerCase().includes(term) ||
                             row.organization.toLowerCase().includes(term) ||
-                            row.subdivision.toLowerCase().includes(term)
+                            row.subdivision.toLowerCase().includes(term) ||
+                            row.email.toLowerCase().includes(term)
                         );
                     });
                 })
@@ -68,13 +69,11 @@ export default function AntTable({ data }) {
             title: "ФИО",
             dataIndex: "fullname",
             key: "fullname",
-            width: 270,
-            sorter: (a, b) => b.fullname - a.fullname,
-            sortDirections: ['descend']
+            width: 300
         },
         {
             title: "Телефон",
-            width: 300,
+            width: 350,
             dataIndex: "phonenumbers",
             key: "phonenumbers",
             render: (nums) => (
@@ -91,26 +90,32 @@ export default function AntTable({ data }) {
                 </ul>),
         },
         {
-            title: "Должность",
+            title: "Email",
             width: 250,
+            dataIndex: "email",
+            key: "email"
+        },
+        {
+            title: "Должность",
+            width: 300,
             dataIndex: "post",
             key: "post",
         },
         {
             title: "Адрес",
-            width: 250,
+            width: 300,
             dataIndex: "address",
             key: "address",
         },
         {
             title: "Организация",
-            width: 250,
+            width: 300,
             dataIndex: "organization",
             key: "organization",
         },
         {
             title: "Подразделение",
-            width: 250,
+            width: 300,
             dataIndex: "subdivision",
             key: "subdivision",
             filters: filters,
@@ -143,7 +148,7 @@ export default function AntTable({ data }) {
                 }}
                 dataSource={searchResult}
                 scroll={{ x: 800, y: 500 }}
-                tableLayout="auto"
+                // tableLayout="auto"
                 ellipsis={false}
             // size="small"
             />

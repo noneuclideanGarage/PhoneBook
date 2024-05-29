@@ -284,9 +284,9 @@ public class ParserService
                 continue;
             }
 
-            if (prop.Name.ToLower().Contains("subdivision")
-                && prop.Name.ToLower().Contains("department")
-                && prop.Name.ToLower().Contains("dept")
+            if ((prop.Name.ToLower().Contains("subdivision")
+                || prop.Name.ToLower().Contains("department")
+                || prop.Name.ToLower().Contains("dept"))
                 && !prop.Name.ToLower().Contains("id"))
             {
                 var subFromJson = prop.Value.Value<string>();
