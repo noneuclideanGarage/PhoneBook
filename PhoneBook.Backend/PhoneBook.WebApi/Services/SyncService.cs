@@ -1,8 +1,6 @@
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using PhoneBook.WebApi.Data;
-using PhoneBook.WebApi.DTOs.PhonebookRecord;
 using PhoneBook.WebApi.Helpers.Interfaces;
 using PhoneBook.WebApi.Helpers.Mapping;
 using Serilog;
@@ -13,9 +11,14 @@ public class SyncService
 {
     private readonly PhonebookDbContext _context;
     private readonly IPhonebookRepository _repository;
+    private readonly ParserService _parser;
 
-    public SyncService(PhonebookDbContext context, IPhonebookRepository repository)
+    public SyncService(
+        PhonebookDbContext context, 
+        IPhonebookRepository repository,
+        ParserService parser)
     {
+        _parser = parser;
         _context = context;
         _repository = repository;
     }
@@ -26,77 +29,66 @@ public class SyncService
         //result-dictionary
         Dictionary<string, SyncStatus> synchronizedJsons = [];
 
-        //Add sync-statuses into result-dictionary
-        foreach (var f in files)
-        {
-            synchronizedJsons.Add(f.FileName, SyncStatus.Unsuccessful);
-        }
-
         Log.Information("Initial sync-status: {@synchronizedJsons}", synchronizedJsons);
-
-        //options for JsonDeserialization
-        var jsonOptions = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true,
-        };
 
         //Synchronization
         try
         {
             foreach (var file in files)
             {
-                if (file.Length != 0)
+                using var sr = new StreamReader(file.OpenReadStream());
+                string jsonText = await sr.ReadToEndAsync(token);
+
+                var dtos = _parser.ParseJsonText(jsonText);
+
+                if (dtos.Count == 0)
                 {
-                    //replace start
-                    var newPhonebookDto =
-                        await JsonSerializer.DeserializeAsync<PhonebookDto>(
-                            file.OpenReadStream(),
-                            cancellationToken: token,
-                            options: jsonOptions);
+                    Log.Error("An error occurred while parsing json");
+                    synchronizedJsons.Add(file.FileName, SyncStatus.Unsuccessful);
+                    continue;
+                }
 
-                    if (newPhonebookDto != null)
+                foreach (var dto in dtos)
+                {
+                    var existingRecord = await _context.PhonebookRecords
+                        .Include(r => r.PhoneNumbers)
+                        .FirstOrDefaultAsync(pr => pr.Id == dto.Id, token);
+
+                    if (existingRecord is null)
                     {
-                        var pbRecordFromDb = await _context.PhonebookRecords
-                            .Include(pb => pb.PhoneNumbers)
-                            .FirstOrDefaultAsync(
-                                p => p.Id == newPhonebookDto.Id, cancellationToken: token);
+                        var createdRecord =
+                            await _repository.CreateAsync(dto, cancellationToken: token);
 
-                        if (pbRecordFromDb != null)
+                        Log.Information("{file} : Record with ID={id} - was created",
+                            file.FileName, createdRecord.Id);
+                        synchronizedJsons.Add($"{file.FileName} - ID: {createdRecord.Id}", SyncStatus.Success);
+                    }
+                    else
+                    {
+                        Log.Information(
+                            "({filename}) : Record with ID={id} - was found",
+                            file.FileName,
+                            existingRecord.Id);
+
+                        var result = await _repository.UpdateAsync(dto.Id,
+                            dto.ToUpdateDto(),
+                            cancellationToken: token);
+
+                        if (result != null)
                         {
                             Log.Information(
-                                "({filename}) : Record with ID={id} - was found",
-                                file.FileName,
-                                pbRecordFromDb.Id);
-
-                            var result = await _repository.UpdateAsync(newPhonebookDto.Id,
-                                newPhonebookDto.ToUpdateDto(),
-                                cancellationToken: token);
-
-                            if (result != null)
-                            {
-                                Log.Information(
-                                    "({filename}) : Record with ID={id} - was updated",
-                                    file.FileName, pbRecordFromDb.Id);
-                                synchronizedJsons[file.FileName] = SyncStatus.Updated;
-                            }
-                        }
-                        else
-                        {
-                            var createdRecord =
-                                await _repository.CreateAsync(newPhonebookDto, cancellationToken: token);
-
-                            Log.Information("{file} : Record with ID={id} - was created", 
-                                file.FileName, createdRecord.Id);
-                            synchronizedJsons[file.FileName] = SyncStatus.Success;
+                                "({filename}) : Record with ID={id} - was updated",
+                                file.FileName, existingRecord.Id);
+                            synchronizedJsons.Add($"{file.FileName} - ID: {existingRecord.Id}", SyncStatus.Updated);
                         }
                     }
                 }
             }
-            
+
             Log.Information("SyncService finished");
             return synchronizedJsons;
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
             Log.Error(ex.Message);
             Log.Information("SyncService finished with errors");
@@ -112,3 +104,62 @@ public enum SyncStatus
     Updated,
     Unsuccessful
 }
+
+/*
+         //options for JsonDeserialization
+   var jsonOptions = new JsonSerializerOptions
+   {
+       PropertyNameCaseInsensitive = true,
+   };
+
+
+            foreach (var file in files)
+   {
+       if (file.Length != 0)
+       {
+           //replace start
+           var newPhonebookDto =
+               await JsonSerializer.DeserializeAsync<PhonebookDto>(
+                   file.OpenReadStream(),
+                   cancellationToken: token,
+                   options: jsonOptions);
+
+           if (newPhonebookDto != null)
+           {
+               var pbRecordFromDb = await _context.PhonebookRecords
+                   .Include(pb => pb.PhoneNumbers)
+                   .FirstOrDefaultAsync(
+                       p => p.Id == newPhonebookDto.Id, cancellationToken: token);
+
+               if (pbRecordFromDb != null)
+               {
+                   Log.Information(
+                       "({filename}) : Record with ID={id} - was found",
+                       file.FileName,
+                       pbRecordFromDb.Id);
+
+                   var result = await _repository.UpdateAsync(newPhonebookDto.Id,
+                       newPhonebookDto.ToUpdateDto(),
+                       cancellationToken: token);
+
+                   if (result != null)
+                   {
+                       Log.Information(
+                           "({filename}) : Record with ID={id} - was updated",
+                           file.FileName, pbRecordFromDb.Id);
+                       synchronizedJsons[file.FileName] = SyncStatus.Updated;
+                   }
+               }
+               else
+               {
+                   var createdRecord =
+                       await _repository.CreateAsync(newPhonebookDto, cancellationToken: token);
+
+                   Log.Information("{file} : Record with ID={id} - was created",
+                       file.FileName, createdRecord.Id);
+                   synchronizedJsons[file.FileName] = SyncStatus.Success;
+               }
+           }
+       }
+   }
+*/
