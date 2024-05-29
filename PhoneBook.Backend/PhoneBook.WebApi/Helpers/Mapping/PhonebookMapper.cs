@@ -23,7 +23,7 @@ public static class PhonebookMapper
             Subdivision = model.Subdivision
         };
     }
-    
+
     public static PhonebookRecord ToPhoneBookRecord(this PhonebookDto dto)
     {
         return new PhonebookRecord
@@ -42,7 +42,7 @@ public static class PhonebookMapper
             Subdivision = dto.Subdivision ?? ""
         };
     }
-    
+
     public static PhonebookUpdateDto ToUpdateDto(this PhonebookDto dto)
     {
         return new PhonebookUpdateDto
@@ -56,6 +56,23 @@ public static class PhonebookMapper
             Organization = dto.Organization ?? "",
             Post = dto.Post ?? "",
             Subdivision = dto.Subdivision ?? ""
+        };
+    }
+
+    public static PhonebookDto FromSyncToDto(this PhonebookSyncDto sync)
+    {
+        return new PhonebookDto
+        {
+            Id = sync.Id,
+            Firstname = sync.Firstname,
+            Middlename = sync.Middlename,
+            Lastname = sync.Lastname,
+            PhoneNumbers = sync.PhoneNumbers,
+            Email = sync.Email,
+            Address = sync.Address,
+            Organization = sync.Organization,
+            Post = sync.Post,
+            Subdivision = sync.Subdivision
         };
     }
 }

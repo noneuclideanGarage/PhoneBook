@@ -50,7 +50,14 @@ public static class AppConfigurator
         builder.Services.AddScoped<ITokenService, TokenService>();
         builder.Services.AddScoped<IAccountRepository, AccountRepository>();
         builder.Services.AddScoped<SyncService>();
-        
+        builder.Services.AddScoped<ParserService>();
+
+        builder.Services.AddDbContext<PhonebookDbContext>(opt =>
+        {
+            opt.UseNpgsql(builder.Configuration.GetConnectionString("db_conn"));
+        });
+
+
         builder.Services.AddIdentity<AppUser, IdentityRole>(opt =>
             {
                 opt.Password.RequireDigit = true;
@@ -130,12 +137,9 @@ public static class AppConfigurator
         db.Database.EnsureCreated();
         if (userManager != null) _ = DataSeeder.SeedAsync(userManager);
         else Log.Information("Cannot get UserManager from scope");
-
-        //if (app.Environment.IsDevelopment())
-        //{
+        
         app.UseSwagger();
         app.UseSwaggerUI();
-        //}
         
         app.UseMiddleware<TaskCancelledExceptionCatchMiddleware>();
         // app.UseHttpsRedirection();
