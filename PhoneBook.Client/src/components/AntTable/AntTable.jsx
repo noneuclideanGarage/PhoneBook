@@ -60,12 +60,6 @@ export default function AntTable({ data }) {
 
     const colums = [
         {
-            title: "ID",
-            dataIndex: "id",
-            key: "id",
-            width: 150
-        },
-        {
             title: "ФИО",
             dataIndex: "fullname",
             key: "fullname",
