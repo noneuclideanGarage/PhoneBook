@@ -2,7 +2,7 @@ namespace PhoneBook.WebApi.DTOs.PhonebookRecord;
 
 public class PhonebookSyncDto
 {
-    public int Id { get; set; }
+    public string Id { get; set; }
 
     public string Lastname { get; set; } = "";
 

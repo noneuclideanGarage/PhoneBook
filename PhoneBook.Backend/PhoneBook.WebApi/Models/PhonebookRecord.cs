@@ -2,7 +2,7 @@ namespace PhoneBook.WebApi.Models;
 
 public class PhonebookRecord
 {
-    public int Id { get; set; }
+    public string Id { get; set; }
     public required string Lastname { get; set; }
     public required string Firstname { get; set; }
     public required string Middlename { get; set; }

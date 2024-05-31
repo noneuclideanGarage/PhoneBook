@@ -7,7 +7,7 @@ public class PhonebookDto
 {
     [Required]
     [JsonPropertyName("id")]
-    public int Id { get; set; }
+    public string Id { get; set; }
     
     [Required]
     [MaxLength(10, ErrorMessage = "Lastname cannot be over characters")]

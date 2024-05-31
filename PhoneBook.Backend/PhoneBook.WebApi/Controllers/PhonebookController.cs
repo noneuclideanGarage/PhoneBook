@@ -32,8 +32,8 @@ public class PhonebookController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("{id:int}")]
-    public async Task<IActionResult> GetById(int id, CancellationToken token)
+    [HttpGet("{id:maxlength(30)}")]
+    public async Task<IActionResult> GetById(string id, CancellationToken token)
     {
         if (!ModelState.IsValid)
         {
@@ -71,8 +71,8 @@ public class PhonebookController : ControllerBase
     }
 
     [Authorize]
-    [HttpPut("{id:int}")]
-    public async Task<IActionResult> UpdatePhonebookRecord(int id,
+    [HttpPut("{id:maxlength(30)}")]
+    public async Task<IActionResult> UpdatePhonebookRecord(string id,
         [FromBody] PhonebookUpdateDto updateDto, CancellationToken token)
     {
         Log.Information("Input: ID={id}, DTO={@updateDto}", id, updateDto);
@@ -95,8 +95,8 @@ public class PhonebookController : ControllerBase
     }
 
     [Authorize]
-    [HttpDelete("{id:int}")]
-    public async Task<IActionResult> DeleteRecord(int id, CancellationToken token)
+    [HttpDelete("{id:maxlength(30)}")]
+    public async Task<IActionResult> DeleteRecord(string id, CancellationToken token)
     {
         if (!ModelState.IsValid)
         {

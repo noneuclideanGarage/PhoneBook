@@ -27,7 +27,7 @@ public class PhonebookRepository : IPhonebookRepository
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<PhonebookDto?> GetByIdAsync(int id, CancellationToken cancellationToken)
+    public async Task<PhonebookDto?> GetByIdAsync(string id, CancellationToken cancellationToken)
     {
         var model = await _context.PhonebookRecords
             .Include(pb => pb.PhoneNumbers)
@@ -45,7 +45,7 @@ public class PhonebookRepository : IPhonebookRepository
         return createDto;
     }
 
-    public async Task<PhonebookDto?> UpdateAsync(int id, PhonebookUpdateDto updateDto,
+    public async Task<PhonebookDto?> UpdateAsync(string id, PhonebookUpdateDto updateDto,
         CancellationToken cancellationToken)
     {
         var model = await _context.PhonebookRecords
@@ -69,7 +69,7 @@ public class PhonebookRepository : IPhonebookRepository
         return model.ToPhonebookDto();
     }
 
-    public async Task<PhonebookDto?> DeleteAsync(int id, CancellationToken cancellationToken)
+    public async Task<PhonebookDto?> DeleteAsync(string id, CancellationToken cancellationToken)
     {
         var model = await _context.PhonebookRecords
             .Include(pb => pb.PhoneNumbers)

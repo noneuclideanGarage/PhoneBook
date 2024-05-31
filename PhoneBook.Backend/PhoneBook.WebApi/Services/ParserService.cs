@@ -2,6 +2,7 @@ using Newtonsoft.Json.Linq;
 using PhoneBook.WebApi.DTOs.PhonebookRecord;
 using PhoneBook.WebApi.Helpers.Mapping;
 using Serilog;
+
 namespace PhoneBook.WebApi.Services;
 
 public class ParserService
@@ -89,17 +90,16 @@ public class ParserService
             var typeOfProp = prop.Value.Type;
             Log.Information("Current property's value type: {@type}", typeOfProp);
 
-            if (prop.Name.ToLower().Contains("id") 
+            if (prop.Name.ToLower().Contains("id")
                 && !prop.Name.ToLower().Contains("sub")
                 && !prop.Name.ToLower().Contains("dept")
                 && !prop.Name.ToLower().Contains("name"))
             {
-                if (typeOfProp is JTokenType.Integer or JTokenType.String)
-                {
-                    syncDto.Id = prop.Value.Value<int>();
-                    Log.Information($"parse id = {syncDto.Id}");
-                    continue;
-                }
+                syncDto.Id = prop.Value.Value<string>() ??
+                             throw new InvalidOperationException("Cannot fetch id from json");
+
+                Log.Information($"parse id = {syncDto.Id}");
+                continue;
             }
 
             if (prop.Name.ToLower().Contains("name") && typeOfProp == JTokenType.String)
@@ -285,8 +285,8 @@ public class ParserService
             }
 
             if ((prop.Name.ToLower().Contains("subdivision")
-                || prop.Name.ToLower().Contains("department")
-                || prop.Name.ToLower().Contains("dept"))
+                 || prop.Name.ToLower().Contains("department")
+                 || prop.Name.ToLower().Contains("dept"))
                 && !prop.Name.ToLower().Contains("id"))
             {
                 var subFromJson = prop.Value.Value<string>();
