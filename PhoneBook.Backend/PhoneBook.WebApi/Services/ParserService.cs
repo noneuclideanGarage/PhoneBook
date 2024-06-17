@@ -27,6 +27,32 @@ public class ParserService
         }
     }
 
+    public async Task<List<PhonebookDto>> ParseJsonTextAsync(string rawJson)
+    {
+        try
+        {
+            string json = rawJson.Replace("\n", "");
+            List<PhonebookDto> result = [];
+
+            var jsonTextAsSubstring = await DefineJsonAsSubstringAsync(json);
+
+            var deserializingTasks = jsonTextAsSubstring
+                .Select((json) => 
+                    Task.Run(() => DeserializeToPhonebookDto(json)))
+                .ToArray();
+
+            var resultOfTasks = await Task.WhenAll(deserializingTasks);
+
+            result.AddRange(resultOfTasks);
+            return result;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+            return [];
+        }
+    }
+
     private static List<string> DefineJsonAsSubstring(string source)
     {
         var positions = DefineJsonPositions(source);
@@ -39,6 +65,21 @@ public class ParserService
                     source.Substring(position.Key, position.Value - position.Key + 1)
             ).ToList();
     }
+
+
+    private static async Task<List<string>> DefineJsonAsSubstringAsync(string source)
+    {
+        var positions = await DefineJsonPositionsAsync(source);
+
+        if (positions.Count == 0) throw new Exception("There's no json-object in text");
+
+        return positions
+            .Select(
+                position =>
+                    source.Substring(position.Key, position.Value - position.Key + 1)
+            ).ToList();
+    }
+
 
     private static Dictionary<int, int> DefineJsonPositions(string source)
     {
@@ -73,6 +114,41 @@ public class ParserService
         }
 
         return positions;
+    }
+
+    private static Task<Dictionary<int, int>> DefineJsonPositionsAsync(string source)
+    {
+        Stack<(char Symbol, int Position)> specialSymbols = new Stack<(char Symbol, int Position)>();
+
+        Dictionary<int, int> positions = [];
+
+        for (int i = 0; i < source.Length; i++)
+        {
+            if (source[i] == '{' && specialSymbols.Count == 0)
+            {
+                positions.Add(i, 0);
+                specialSymbols.Push((source[i], i));
+                continue;
+            }
+
+            if (source[i] == '{' && specialSymbols.Peek().Symbol == '{')
+            {
+                specialSymbols.Push((source[i], i));
+                continue;
+            }
+
+            if (source[i] == '}')
+            {
+                var (_, start) = specialSymbols.Pop();
+
+                if (specialSymbols.Count == 0)
+                {
+                    positions[start] = i;
+                }
+            }
+        }
+
+        return Task.FromResult(positions);
     }
 
     private static PhonebookDto DeserializeToPhonebookDto(string jsonText)

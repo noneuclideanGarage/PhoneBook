@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using PhoneBook.WebApi.Data;
 using PhoneBook.WebApi.Helpers.Interfaces;
@@ -14,7 +15,7 @@ public class SyncService
     private readonly ParserService _parser;
 
     public SyncService(
-        PhonebookDbContext context, 
+        PhonebookDbContext context,
         IPhonebookRepository repository,
         ParserService parser)
     {
@@ -39,7 +40,7 @@ public class SyncService
                 using var sr = new StreamReader(file.OpenReadStream());
                 string jsonText = await sr.ReadToEndAsync(token);
 
-                var dtos = _parser.ParseJsonText(jsonText);
+                var dtos = await _parser.ParseJsonTextAsync(jsonText);
 
                 if (dtos.Count == 0)
                 {
@@ -47,42 +48,59 @@ public class SyncService
                     synchronizedJsons.Add(file.FileName, SyncStatus.Unsuccessful);
                     continue;
                 }
-
-                foreach (var dto in dtos)
+                else if (dtos.Count > 100)
                 {
-                    var existingRecord = await _context.PhonebookRecords
-                        .Include(r => r.PhoneNumbers)
-                        .FirstOrDefaultAsync(pr => pr.Id == dto.Id, token);
+                    Log.Information("Start mapping dtos");
+                    var mappedRecords = dtos
+                        .AsParallel()
+                        .Select(dto => dto.ToPhoneBookRecord());
+                    Log.Information("End mapping dtos");
 
-                    if (existingRecord is null)
+                    Log.Information("Start bulk insert/update operation");
+                    await _context.BulkInsertOrUpdateAsync(mappedRecords, cancellationToken: token);
+                    Log.Information("End bulk insert/update operation");
+
+                    synchronizedJsons.Add(
+                        $"{file.FileName} (massive request)",
+                        SyncStatus.MassiveRequestComplete
+                    );
+                }
+                else
+                    foreach (var dto in dtos)
                     {
-                        var createdRecord =
-                            await _repository.CreateAsync(dto, cancellationToken: token);
+                        var existingRecord = await _context.PhonebookRecords
+                            .Include(r => r.PhoneNumbers)
+                            .FirstOrDefaultAsync(pr => pr.Id == dto.Id, token);
 
-                        Log.Information("{file} : Record with ID={id} - was created",
-                            file.FileName, createdRecord.Id);
-                        synchronizedJsons.Add($"{file.FileName} - ID: {createdRecord.Id}", SyncStatus.Success);
-                    }
-                    else
-                    {
-                        Log.Information(
-                            "({filename}) : Record with ID={id} - was found",
-                            file.FileName,
-                            existingRecord.Id);
+                        if (existingRecord is null)
+                        {
+                            var createdRecord =
+                                await _repository.CreateAsync(dto, cancellationToken: token);
 
-                        var result = await _repository.UpdateAsync(dto.Id,
-                            dto.ToUpdateDto(),
-                            cancellationToken: token);
-
-                        if (result != null)
+                            Log.Information("{file} : Record with ID={id} - was created",
+                                file.FileName, createdRecord.Id);
+                            synchronizedJsons.Add($"{file.FileName} - ID: {createdRecord.Id}", SyncStatus.Success);
+                        }
+                        else
                         {
                             Log.Information(
-                                "({filename}) : Record with ID={id} - was updated",
-                                file.FileName, existingRecord.Id);
-                            synchronizedJsons.Add($"{file.FileName} - ID: {existingRecord.Id}", SyncStatus.Updated);
+                                "({filename}) : Record with ID={id} - was found",
+                                file.FileName,
+                                existingRecord.Id);
+
+                            var result = await _repository.UpdateAsync(dto.Id,
+                                dto.ToUpdateDto(),
+                                cancellationToken: token);
+
+                            if (result != null)
+                            {
+                                Log.Information(
+                                    "({filename}) : Record with ID={id} - was updated",
+                                    file.FileName, existingRecord.Id);
+                                synchronizedJsons.Add($"{file.FileName} - ID: {existingRecord.Id}", SyncStatus.Updated);
+                            }
                         }
                     }
-                }
             }
 
             Log.Information("SyncService finished");
@@ -102,5 +120,6 @@ public enum SyncStatus
 {
     Success,
     Updated,
-    Unsuccessful
+    Unsuccessful,
+    MassiveRequestComplete
 }
